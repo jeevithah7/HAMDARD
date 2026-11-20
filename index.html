@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E3F7C8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>HAMDARD</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<section id="home" class="scr on">
+ <div class="top"><button class="av" id="avBtn" aria-label="Edit name">J</button><div><small>Hi</small><b id="nm">there</b></div></div>
+ <h1>Tracking<br>your Heart</h1>
+ <div class="row" style="margin-bottom:12px">
+  <div class="batt"><div class="cell"><svg class="bolt" width="18" height="18" viewBox="0 0 24 24" fill="#0E1512"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><i id="b5"></i><i id="b4"></i><i id="b3"></i><i id="b2"></i><i id="b1"></i></div><b id="batV" style="margin-top:8px">--%</b><span>battery</span></div>
+  <div class="live"><div><span>Now</span><br><b id="liveHr">--</b> <span>bpm</span></div><canvas id="wMini" width="400" height="90"></canvas></div>
+ </div>
+ <div class="card sky dev">
+  <svg class="d" viewBox="0 0 120 120" aria-hidden="true"><path d="M44 8h32l4 22H40z" fill="#8FA84A"/><path d="M44 112h32l4-22H40z" fill="#8FA84A"/><rect x="30" y="28" width="60" height="64" rx="16" fill="#0E1512"/><rect x="35" y="33" width="50" height="54" rx="12" fill="#1E2A25"/><path d="M42 62h10l5-12 8 22 5-10h8" fill="none" stroke="#6DE3A0" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div><h3>Customize<br>your device</h3><div style="display:flex;gap:10px"><button class="ico" id="icoBle" aria-label="Connect Bluetooth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10-5 5V2l5 5L7 17"/></svg></button><button class="ico" id="icoSim" aria-label="Toggle demo data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h10M18 8h2M4 16h2M10 16h10"/><circle cx="16" cy="8" r="2"/><circle cx="8" cy="16" r="2"/></svg></button></div></div>
+ </div>
+ <button class="big" id="conn"><span id="connT">Connect</span><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 6 6 6-6 6M13 6l6 6-6 6"/></svg></button>
+ <p class="mut" id="connNote" style="text-align:center;margin-top:10px">No device? Tap the sliders for demo data, or use the Check tab with your phone camera.</p>
+</section>
+
+<!-- HEALTH -->
+<section id="health" class="scr">
+ <div class="top"><div class="av" style="background:var(--ink)" id="av2">J</div><div><small>Hi</small><b id="nm2">there</b></div></div>
+ <h1>Heart Health</h1>
+ <div class="card sage hp">
+  <div class="t"><button class="ico" style="width:36px;height:36px" aria-label="Favourite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 4.5 6.4 4.5c2 0 3.6 1 5.6 3.2 2-2.2 3.6-3.2 5.6-3.2 3.7 0 5.5 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg></button><h3>Health</h3><p id="lastCheck">No check yet</p><button class="chip" data-go="diag" style="align-self:flex-start">Diagnostics</button></div>
+  <div class="heart"><svg viewBox="0 0 120 120" width="120" aria-hidden="true"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F4F5F1"/><stop offset="1" stop-color="#A9B0A4"/></linearGradient></defs><path d="M60 108S14 80 8 46C5 24 22 10 40 12c9 1 15 6 20 13 5-7 11-12 20-13 18-2 35 12 32 34-6 34-52 62-52 62z" fill="url(#hg)"/><path d="M48 14c-4 14-2 28 6 40M72 14c3 12 8 22 18 30M60 26v60" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/></svg></div>
+ </div>
+ <div class="row" style="margin-bottom:12px">
+  <div class="tile"><button class="ico" style="background:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg></button><div><div class="l">Heart Pressure</div><div class="v" id="bpV">--/--</div><div class="mut">estimate, mmHg</div></div></div>
+  <div class="tile"><button class="ico" style="background:#fff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg></button><div><div class="l">Heart Rhythm</div><div class="v"><span id="rhV">--</span><small>/min</small></div><div class="mut">beats per minute</div></div></div>
+ </div>
+ <div class="card butter doc">
+  <button class="av" id="docAv" aria-label="Edit doctor">D</button><div class="m"><b id="docN">Add your doctor</b><span id="docR">Tap the circle to set name and email</span></div>
+  <button class="ico" id="docSend" aria-label="Send report to doctor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></button>
+ </div>
+ <p class="mut">Estimates are for screening only and are not a diagnosis. If you feel unwell, contact a doctor.</p>
+</section>
+
+<!-- DIAGNOSTICS -->
+<section id="diag" class="scr">
+ <div class="back"><button class="ico" data-go="health" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button><button class="ico" data-go="home" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9H4z"/></svg></button></div>
+ <h1>Diagnostics</h1>
+ <div class="card sky"><div style="display:flex;align-items:center;gap:12px"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg></div><b style="font-size:20px;flex:1">Heartbeat</b></div>
+  <div style="margin:8px 0 0"><b style="font-size:34px" id="dHr">--</b> <span class="mut">bpm</span></div>
+  <canvas id="wBig" width="600" height="130"></canvas><span class="chip" id="srcChip">No source</span></div>
+ <div class="card sage" style="display:flex;align-items:center;gap:14px">
+  <div class="ring"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="86" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="14"/><circle id="r1" cx="100" cy="100" r="86" fill="none" stroke="#4E9F3D" stroke-width="14" stroke-linecap="round" stroke-dasharray="540.4" stroke-dashoffset="540.4"/><circle cx="100" cy="100" r="62" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="14"/><circle id="r2" cx="100" cy="100" r="62" fill="none" stroke="#8CCB5E" stroke-width="14" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6"/></svg><div class="c"><span class="mut">Oxygen</span><b id="spV">--</b><span class="mut">SpO₂ %</span></div></div>
+ </div>
+ <div class="card sage"><div style="display:flex;align-items:center;gap:12px"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg></div><b style="font-size:20px">Results</b></div>
+  <p id="resTxt" style="margin:10px 0 0">No reading yet. Connect your device or use the Check tab.</p>
+  <div class="chips"><span class="tag" style="background:var(--butter)" id="tagQ">Signal --</span><span class="tag" style="background:var(--sky)" id="tagS">Source --</span></div></div>
+ <div class="row"><button class="big dark" id="saveR" style="justify-content:center;padding:16px">Save reading</button><button class="big" id="csvR" style="justify-content:center;padding:16px;background:#fff;border:1.5px solid var(--ink)">Export CSV</button></div>
+ <h3 style="margin:18px 0 4px">History</h3><div id="hist"></div>
+</section>
+
+<!-- CHECK -->
+<section id="check" class="scr">
+ <h1>Check with<br>your phone</h1>
+ <div class="card sky"><p style="margin:0">Cover the back camera and flash with your fingertip. Press lightly and stay still for 30 seconds.</p></div>
+ <div class="card soft" style="text-align:center"><b id="cT" style="font-size:54px;line-height:1">30</b><div class="mut">seconds</div><canvas id="wChk" width="600" height="120"></canvas>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:8px"><span class="mut">Signal</span><div class="bar" style="flex:1"><i id="cQ"></i></div></div><p class="mut" id="cMsg" role="status">Ready.</p></div>
+ <button class="big" id="cGo" style="justify-content:center">Start check</button>
+ <p class="mut" style="margin-top:10px">Chrome on Android works best. The estimate is for testing only.</p>
+</section>
+
+<nav class="pill" aria-label="Main">
+ <button data-go="home" data-n="home" aria-current="page" aria-label="Device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9H4z"/></svg></button>
+ <button data-go="health" data-n="health" aria-label="Heart health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 4.5 6.4 4.5c2 0 3.6 1 5.6 3.2 2-2.2 3.6-3.2 5.6-3.2 3.7 0 5.5 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg></button>
+ <button data-go="check" data-n="check" aria-label="Check with phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M6 12h3l1.5-3 3 6 1.5-3H18"/></svg></button>
+ <button data-go="diag" data-n="diag" aria-label="Diagnostics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg></button>
+</nav>
+<div id="toast" role="status"></div>
+<video id="v" playsinline muted></video><canvas id="px" width="16" height="16" hidden></canvas>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
