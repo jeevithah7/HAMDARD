@@ -68,15 +68,30 @@
 
 <!-- CHECK -->
 <section id="check" class="scr">
- <button class="scanClose" data-go="home" aria-label="Close pulse scanner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+ <button class="scanClose" data-go="home" type="button" aria-label="Close pulse scanner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
  <div class="scanFull">
   <div class="sensorWrap">
-   <button class="sensor" id="sensor" type="button" aria-label="Start pulse measurement"><video id="v" playsinline muted></video><canvas id="fingerPrint" width="400" height="400" aria-hidden="true"></canvas></button>
+   <div class="sensor" id="sensor">
+    <canvas id="camPreview" width="400" height="400" aria-hidden="true"></canvas>
+    <canvas id="fingerPrint" width="400" height="400" aria-hidden="true"></canvas>
+    <span id="lensTag" class="lensTag">Cover Rear Camera Lens</span>
+   </div>
    <div class="sensorProgress"><span id="cT">30</span><small>sec</small></div>
   </div>
-  <h2 id="scanTitle">Place your finger over the camera</h2>
-  <p class="mut" id="cMsg" role="status">Tap the sensor to begin.</p>
+  <div class="scanIntro">
+   <h2 id="scanTitle">Place your finger over the rear camera</h2>
+   <p id="cMsg" role="status">Ensure good lighting around your fingertip.</p>
+  </div>
+  <div class="scanReadout">
+   <div class="scanMetrics">
+    <div><span>Heart Rate</span><div><b id="cHr">--</b><small>BPM</small></div></div>
+    <div class="scanQuality"><span>Signal Quality</span><b id="cSignal">Standby · 0%</b><div class="qualityTrack"><i id="cQ"></i></div></div>
+   </div>
+   <div class="scanWave"><canvas id="wChk" width="600" height="80" aria-label="Live pulse waveform"></canvas></div>
+   <div class="scanFoot"><span id="cFoot">Waiting for lens coverage</span><span>0.7–3.3 Hz PPG</span></div>
+  </div>
  </div>
+ <div class="scanActions"><button class="scanCancel" id="cCancel" type="button">Start Scan</button></div>
 </section>
 
 <!-- PROFILE -->

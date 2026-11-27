@@ -23,6 +23,7 @@ h1{font-size:30px;line-height:1.12;font-weight:800;margin:6px 0 16px;letter-spac
 .live{flex:1;border-radius:28px;background:var(--soft);padding:14px;display:flex;flex-direction:column;justify-content:space-between;min-height:176px}
 .live b{font-size:44px;line-height:1;font-weight:800}.live span{font-size:13px;color:var(--mut)}
 canvas{width:100%;display:block}
+#px{display:none!important}
 .dev{display:flex;align-items:center;gap:12px}
 .dev svg.d{width:112px;flex:none}
 .dev h3{margin:0 0 10px;font-size:17px}
@@ -55,36 +56,47 @@ canvas{width:100%;display:block}
 .sm.ghostb{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
 .sw{display:flex;align-items:center;gap:10px;font-weight:700}
 .sw input{width:18px;height:18px;accent-color:var(--ink)}
-.scanCard{text-align:center}
-.scanClose{position:absolute;z-index:10;top:calc(16px + env(safe-area-inset-top,0px));left:18px;width:44px;height:44px;border:0;border-radius:50%;background:var(--soft);color:var(--ink);display:grid;place-items:center;box-shadow:0 6px 18px rgba(14,21,18,.06);cursor:pointer}
+#check.scr.on{position:relative;height:100vh;height:100dvh;min-height:620px;padding:0;display:flex;flex-direction:column;overflow:auto;background:var(--ink);color:var(--soft)}
+.scanClose{position:absolute;z-index:10;top:calc(12px + env(safe-area-inset-top,0px));right:18px;width:42px;height:42px;border:0;border-radius:50%;background:var(--soft);color:var(--ink);display:grid;place-items:center;box-shadow:0 5px 16px rgba(14,21,18,.2);cursor:pointer}
 .scanClose svg{width:20px;height:20px}
-#check.scr.on{min-height:100vh;padding:0;background:#fff}
-.scanFull{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:76px 24px 36px}
-.scanFull h2{max-width:320px;margin:18px auto 4px;font-size:20px}
-.scanFull #cMsg{max-width:320px;min-height:20px;margin:4px auto}
+.scanClose:focus-visible{outline:3px solid var(--butter);outline-offset:3px}
 .app.checking .pill{display:none}
-.sensor{border:0;padding:0;cursor:pointer}
-.sensorWrap{width:248px;height:248px}
-.sensor video{display:none!important}
-.sensorWrap{position:relative;width:228px;height:228px;margin:2px auto 14px}
-.sensor{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 50%,#F7FBEF 0%,var(--sage) 72%,#E1F0D1 100%);border:2px solid rgba(14,21,18,.12);box-shadow:0 0 0 10px rgba(207,230,184,.38),inset 0 0 28px rgba(14,21,18,.06)}
-.sensor video{position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;opacity:0;transition:opacity .25s}
-.sensor.active video{opacity:.42}
-.sensor canvas{position:absolute;z-index:2;inset:0;width:100%;height:100%;mix-blend-mode:multiply;pointer-events:none}
-.sensorProgress{position:absolute;right:-5px;top:-5px;width:58px;height:58px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--butter);border:3px solid var(--soft);color:var(--ink);box-shadow:0 5px 16px rgba(14,21,18,.12)}
+.scanFull{flex:1;min-height:0;display:grid;grid-template-rows:auto auto auto;justify-items:center;align-content:start;gap:14px;text-align:center;padding:calc(62px + env(safe-area-inset-top,0px)) 20px 10px}
+.sensorWrap{position:relative;width:min(72vw,320px);aspect-ratio:1;margin:0 auto}
+.sensor{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 44%,rgba(207,230,184,.22),rgba(14,21,18,.98) 72%);border:1px solid rgba(243,245,242,.24);box-shadow:0 0 0 8px rgba(207,230,184,.08),0 0 34px rgba(191,230,240,.12),inset 0 0 30px rgba(14,21,18,.42)}
+.sensor #camPreview{position:absolute;z-index:1;inset:0;width:100%;height:100%;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s;object-fit:cover}
+.sensor.active #camPreview{opacity:.58;visibility:visible}
+.sensor #fingerPrint{position:absolute;z-index:2;inset:0;width:100%;height:100%;pointer-events:none}
+.lensTag{position:absolute;z-index:3;left:50%;bottom:22px;transform:translateX(-50%);padding:6px 11px;border:1px solid rgba(243,245,242,.26);border-radius:999px;background:rgba(14,21,18,.78);color:var(--soft);font-size:9px;line-height:1.2;font-weight:800;letter-spacing:.11em;text-transform:uppercase;white-space:nowrap;opacity:0;transition:opacity .2s}
+.sensor.active .lensTag{opacity:1}
+.sensorProgress{position:absolute;z-index:4;left:-4px;top:-4px;width:58px;height:58px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--butter);border:3px solid var(--ink);color:var(--ink);box-shadow:0 5px 16px rgba(14,21,18,.28)}
 .sensorProgress span{font-size:20px;font-weight:800;line-height:1}
 .sensorProgress small{font-size:10px;color:var(--mut)}
-.scanCard h2{margin:0 0 4px;font-size:20px;line-height:1.2}
-.scanCard #cMsg{min-height:38px;margin:6px 0 12px}
-.scanStats{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;margin-bottom:8px}
-.scanStats>div{background:#fff;border-radius:18px;padding:12px}
-.scanStats span{display:block;font-size:12px;color:var(--mut)}
-.scanStats b{display:block;font-size:22px;margin-top:3px}
-.scanStats b small{font-size:11px;color:var(--mut)}
-.scanStats #cSignal{font-size:14px;line-height:1.3;padding-top:6px}
-.scanBar{display:flex;align-items:center;gap:10px;margin-top:8px;text-align:left}
-.scanBar>span{font-size:12px;color:var(--mut)}
-.bar{height:10px;background:rgba(0,0,0,.1);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:#2E7D4F;transition:width .3s}
+.scanIntro{width:min(100%,370px);min-height:78px;display:flex;flex-direction:column;justify-content:center}
+.scanIntro h2{max-width:340px;margin:0 auto 5px;font-size:21px;line-height:1.2;letter-spacing:-.02em;color:var(--soft)}
+.scanIntro p{max-width:340px;min-height:20px;margin:0 auto;color:rgba(243,245,242,.7);font-size:13px}
+.scanReadout{width:min(100%,390px);min-height:170px;align-self:stretch;justify-self:center;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:14px 16px;border:1px solid rgba(207,230,184,.72);border-radius:22px;background:var(--soft);color:var(--ink);text-align:left}
+.scanMetrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
+.scanMetrics>div:first-child{border-right:1px solid rgba(14,21,18,.13)}
+.scanMetrics span{display:block;margin-bottom:4px;color:var(--mut);font-size:11px;font-weight:700}
+.scanMetrics>div:first-child>div{display:flex;align-items:baseline;gap:5px}
+.scanMetrics #cHr{font-size:31px;line-height:1;font-weight:800;letter-spacing:-.04em}
+.scanMetrics small{color:var(--mut);font-size:11px;font-weight:700}
+.scanQuality{padding-left:8px}
+.scanMetrics #cSignal{display:block;color:var(--ink);font-size:12.5px;line-height:1.25}
+.qualityTrack{height:5px;margin-top:8px;overflow:hidden;border-radius:999px;background:rgba(14,21,18,.12)}
+.qualityTrack i{display:block;width:0;height:100%;border-radius:inherit;background:var(--sage);transition:width .25s ease}
+.scanReadout[data-quality="good"] .qualityTrack i{background:var(--ink)}
+.scanReadout[data-quality="poor"] .qualityTrack i{background:var(--pulse)}
+.scanWave{height:46px;overflow:hidden;border-radius:10px;background:rgba(207,230,184,.36)}
+.scanWave canvas{width:100%;height:100%}
+.scanFoot{display:flex;justify-content:space-between;gap:8px;color:var(--mut);font-size:10px;font-weight:700}
+.scanActions{width:min(100%,390px);padding:4px 20px calc(18px + env(safe-area-inset-bottom,0px));margin:0 auto}
+.scanCancel{width:100%;min-height:52px;border:1px solid rgba(243,245,242,.38);border-radius:16px;background:rgba(243,245,242,.06);color:var(--soft);font:800 14px "Plus Jakarta Sans",sans-serif;letter-spacing:.01em;cursor:pointer;transition:background .2s,border-color .2s}
+.scanCancel:hover{background:rgba(243,245,242,.12);border-color:var(--sage)}
+#check[data-scan-state="failed"] .scanCancel{border-color:var(--butter);color:var(--butter)}
+#check[data-scan-state="complete"] .scanCancel{border-color:var(--sage);color:var(--sage)}
+@media(max-height:720px){.scanFull{gap:10px;padding-top:calc(54px + env(safe-area-inset-top,0px))}.sensorWrap{width:min(58vw,270px)}.scanIntro{min-height:64px}.scanIntro h2{font-size:19px}.scanReadout{min-height:155px;padding:10px 14px;gap:7px}.scanActions{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9;max-width:90%;text-align:center}
 #toast.on{opacity:1}
 button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
