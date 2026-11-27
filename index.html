@@ -69,9 +69,20 @@
 <!-- CHECK -->
 <section id="check" class="scr">
  <h1>Check with<br>your phone</h1>
- <div class="card sky"><p style="margin:0">Cover the back camera and flash with your fingertip. Press lightly and stay still for 30 seconds.</p></div>
- <div class="card soft" style="text-align:center"><b id="cT" style="font-size:54px;line-height:1">30</b><div class="mut">seconds</div><canvas id="wChk" width="600" height="120"></canvas>
-  <div style="display:flex;align-items:center;gap:10px;margin-top:8px"><span class="mut">Signal</span><div class="bar" style="flex:1"><i id="cQ"></i></div></div><p class="mut" id="cMsg" role="status">Ready.</p></div>
+ <div class="card soft scanCard">
+  <div class="sensorWrap">
+   <div class="sensor" id="sensor"><video id="v" playsinline muted></video><canvas id="fingerPrint" width="400" height="400" aria-hidden="true"></canvas></div>
+   <div class="sensorProgress"><span id="cT">30</span><small>sec</small></div>
+  </div>
+  <h2 id="scanTitle">Place your finger over the camera</h2>
+  <p class="mut" id="cMsg" role="status">Tap Start check, then cover the rear camera and flash.</p>
+  <div class="scanStats">
+   <div><span>Heart Rate</span><b><span id="cHr">--</span> <small>BPM</small></b></div>
+   <div><span>Signal Quality</span><b id="cSignal">Standby</b></div>
+  </div>
+  <canvas id="wChk" width="600" height="120"></canvas>
+  <div class="scanBar"><span>Signal</span><div class="bar" style="flex:1"><i id="cQ"></i></div></div>
+ </div>
  <button class="big" id="cGo" style="justify-content:center">Start check</button>
  <p class="mut" style="margin-top:10px">Chrome on Android works best. The estimate is for testing only.</p>
 </section>
@@ -95,7 +106,7 @@
  <button data-go="profile" data-n="profile" aria-label="Profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg></button>
 </nav>
 <div id="toast" role="status"></div>
-<video id="v" playsinline muted></video><canvas id="px" width="16" height="16" hidden></canvas>
+<canvas id="px" width="16" height="16" hidden></canvas>
 </div>
 
 <script src="app.js"></script>

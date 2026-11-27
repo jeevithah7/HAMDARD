@@ -141,14 +141,18 @@ $("#pDel").onclick=function(){
 var FS=30,DUR=30,stream,track,rec=[],running=false,t0=0,raf=0,vid=$("#v"),pc=$("#px").getContext("2d",{willReadFrequently:true});
 async function startCheck(){
   $("#cMsg").textContent="Starting camera...";
+  $("#scanTitle").textContent="Initializing camera";
+  $("#cSignal").textContent="Connecting";
+  $("#sensor").classList.remove("active");
   try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:640},height:{ideal:480},frameRate:{ideal:30}},audio:false})}
-  catch(e){$("#cMsg").textContent="Camera blocked. Allow camera access (the page must be https).";return}
+  catch(e){$("#cMsg").textContent="Camera blocked. Allow camera access (the page must be https).";$("#scanTitle").textContent="Camera unavailable";$("#cSignal").textContent="Unavailable";return}
   track=stream.getVideoTracks()[0];try{await track.applyConstraints({advanced:[{torch:true}]})}catch(e){$("#cMsg").textContent="Flash control unavailable. Use Chrome on Android."}
   vid.srcObject=stream;await vid.play();stopSim();S.conn=false;
-  rec=[];running=true;t0=performance.now();$("#cGo").firstChild.textContent="Stop";loopCheck();
+  rec=[];running=true;t0=performance.now();$("#cGo").firstChild.textContent="Stop";$("#sensor").classList.add("active");$("#scanTitle").textContent="Place your finger over the camera";$("#cT").textContent=DUR;$("#cSignal").textContent="Acquiring";loopCheck();
 }
 function stopCheck(){
   if(!running)return;running=false;cancelAnimationFrame(raf);
+  $("#sensor").classList.remove("active");
   if(track){try{track.applyConstraints({advanced:[{torch:false}]})}catch(e){}}
   if(stream)stream.getTracks().forEach(function(t){t.stop()});
   $("#cGo").firstChild.textContent="Start check";
@@ -160,10 +164,35 @@ function loopCheck(){
   pc.drawImage(vid,0,0,16,16);var d=pc.getImageData(0,0,16,16).data,r=0,g=0,b=0,n=d.length/4;
   for(var i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2]}r/=n;g/=n;b/=n;
   var finger=r>120&&g<0.75*r;if(finger)rec.push({t:now-t0,r:r,g:g});
-  $("#cT").textContent=Math.max(0,DUR-Math.floor(el));
-  if(!finger)$("#cMsg").textContent="Cover the camera and flash fully with your fingertip.";
-  else if(rec.length<=FS*8)$("#cMsg").textContent="Hold still...";
-  else if(Math.floor(el*2)%2===0){var a=analyse(rec.slice(-FS*10));if(a){$("#cQ").style.width=(a.q*100)+"%";window.__z=a.z;$("#cMsg").textContent=a.q>=0.5?("Good signal · about "+Math.round(a.hr)+" bpm"):"Weak signal. Press lightly and keep still."}}
+  var remaining=Math.max(0,DUR-Math.ceil(el));
+  $("#cT").textContent=remaining;
+  $("#cQ").style.width=(finger?"18":"0")+"%";
+  if(!finger){
+    $("#scanTitle").textContent="Cover the camera and flash";
+    $("#cMsg").textContent="Center your fingertip over the rear lens.";
+    $("#cSignal").textContent="Awaiting contact";
+  }else if(rec.length<=FS*8){
+    $("#scanTitle").textContent="Hold your finger steady";
+    $("#cMsg").textContent="Confirming optical contact...";
+    $("#cSignal").textContent="Acquiring";
+  }else if(Math.floor(el*2)%2===0){
+    var a=analyse(rec.slice(-FS*10));
+    if(a){
+      $("#cQ").style.width=(a.q*100)+"%";
+      window.__z=a.z;
+      if(a.q>=0.5){
+        $("#scanTitle").textContent="Measuring your pulse";
+        $("#cMsg").textContent="Strong signal. Keep light pressure and stay still.";
+        $("#cSignal").textContent="Strong · "+Math.round(a.q*100)+"%";
+        $("#cHr").textContent=Math.round(a.hr);
+      }else{
+        $("#scanTitle").textContent="Hold steady";
+        $("#cMsg").textContent="Weak signal. Press lightly and keep still.";
+        $("#cSignal").textContent="Weak · "+Math.round(a.q*100)+"%";
+        $("#cHr").textContent="--";
+      }
+    }
+  }
   if(el>=DUR){stopCheck();return}raf=requestAnimationFrame(loopCheck);
 }
 function prep(s){
@@ -186,6 +215,33 @@ function analyse(s){
 $("#cGo").onclick=function(){running?stopCheck():startCheck()};
 
 /* ---------- waveforms ---------- */
+function drawFingerprint(){
+  var cv=$("#fingerPrint");
+  if(!cv)return;
+  var x=cv.getContext("2d"),W=cv.width,H=cv.height,cx=W/2,cy=H/2;
+  x.clearRect(0,0,W,H);
+  x.save();
+  x.translate(cx,cy);
+  var quality=running?Math.min(1,rec.length/(FS*12)):0.18;
+  for(var i=0;i<26;i++){
+    var rx=76+i*3.05,ry=112+i*2.25;
+    x.beginPath();
+    x.ellipse(0,5,rx,ry,0,Math.PI*(0.12+i*.012),Math.PI*(1.88-i*.008));
+    x.strokeStyle=i%5===0?"rgba(249,226,122,.82)":"rgba(14,21,18,"+(0.38+quality*.34)+")";
+    x.lineWidth=i%5===0?3:1.5;
+    x.stroke();
+  }
+  for(var i=0;i<7;i++){
+    var r=28+i*13;
+    x.beginPath();
+    x.arc(0,8,r,0,Math.PI*2);
+    x.strokeStyle=i===6?"rgba(14,21,18,.7)":"rgba(207,230,184,.95)";
+    x.lineWidth=i===6?2:1.5;
+    x.stroke();
+  }
+  x.restore();
+}
+
 function draw(cv,data,col,w){
   var x=cv.getContext("2d"),W=cv.width,H=cv.height;x.clearRect(0,0,W,H);if(!data||data.length<2)return;
   var d=data.slice(-w),mn=Math.min.apply(null,d),mx=Math.max.apply(null,d),rg=(mx-mn)||1;
@@ -194,6 +250,7 @@ function draw(cv,data,col,w){
 }
 (function loop(){
   var onS=function(id){return $("#"+id).classList.contains("on")};
+  if(onS("check"))drawFingerprint();
   if(onS("home"))draw($("#wMini"),S.wave,"#0E1512",300);
   if(onS("diag"))draw($("#wBig"),S.wave,"#1F6F8B",500);
   if(onS("check"))draw($("#wChk"),window.__z,"#D6244B",180);
