@@ -17,6 +17,7 @@ function go(id){
   if(id!=="check")stopCheck();window.scrollTo(0,0);ui();
 }
 document.addEventListener("click",function(e){var b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
+document.addEventListener("click",function(e){if(e.target.closest("[data-back]"))go("home")});
 
 /* ---------- state -> UI ---------- */
 function resText(){
@@ -28,6 +29,7 @@ function resText(){
 function ui(){
   var ini=(user.name||"J").trim().charAt(0).toUpperCase()||"J";
   $("#avBtn").textContent=ini;$("#av2").textContent=ini;$("#nm").textContent=user.name;$("#nm2").textContent=user.name;
+  if($("#nameIn")&&!$("#nameIn").matches(":focus"))$("#nameIn").value=user.name==="there"?"":user.name;
   var h=S.hr==null?"--":Math.round(S.hr);
   $("#liveHr").textContent=h;$("#rhV").textContent=h;$("#dHr").textContent=h;
   $("#batV").textContent=S.bat==null?"--%":Math.round(S.bat)+"%";
@@ -42,13 +44,17 @@ function ui(){
   $("#connT").textContent=S.conn?(S.live?"Demo running · Stop":"Connected · Disconnect"):"Connect";
   $("#docN").textContent=doc.name||"Add your doctor";$("#docR").textContent=doc.email||"Tap the circle to set name and email";
   $("#docAv").textContent=(doc.name||"D").charAt(0).toUpperCase();
+  if(S.conn)$("#devSt").textContent=S.live?"Demo data is running (simulated).":"Connected to "+(dev&&dev.name?dev.name:"your device")+ ".";
+  else $("#devSt").textContent="No device connected.";
+  if(S.bat!=null&&S.conn){$("#devBat").hidden=false;$("#devBat").textContent="Battery: "+Math.round(S.bat)+"%";}
+  else $("#devBat").hidden=true;
+  if($("#pSim"))$("#pSim").textContent=S.live?"Stop demo data":"Start demo data";
   var hl=$("#hist");hl.innerHTML="";
   hist.slice(-6).reverse().forEach(function(x){var d=document.createElement("div");d.className="hist";
     d.innerHTML="<span>"+new Date(x.ts).toLocaleDateString([],{day:"numeric",month:"short"})+" · "+x.src+"</span><b>"+x.hr+" bpm"+(x.spo2!=null?" · "+x.spo2+"%":"")+(x.sys!=null?" · "+x.sys+"/"+x.dia:"")+"</b>";hl.appendChild(d)});
   if(!hist.length)hl.innerHTML='<p class="mut">Saved readings appear here.</p>';
 }
 setInterval(ui,500);
-$("#avBtn").onclick=function(){var n=prompt("Your name",user.name==="there"?"":user.name);if(n!==null){user.name=n.trim()||"there";lw("user",user);ui()}};
 $("#docAv").onclick=function(){var n=prompt("Doctor name",doc.name);if(n===null)return;var e=prompt("Doctor email",doc.email);doc={name:n.trim(),email:(e||"").trim()};lw("doc",doc);ui()};
 function summary(){return hist.slice(-5).map(function(x){return new Date(x.ts).toLocaleString()+": HR "+x.hr+" bpm"+(x.spo2!=null?", SpO2 "+x.spo2+"%":"")+(x.sys!=null?", BP "+x.sys+"/"+x.dia:"")+" ("+x.src+")"}).join("\n")}
 $("#docSend").onclick=function(){
@@ -57,6 +63,7 @@ $("#docSend").onclick=function(){
   location.href="mailto:"+encodeURIComponent(doc.email)+"?subject="+encodeURIComponent("HAMDARD readings from "+user.name)+"&body="+encodeURIComponent("Recent screening estimates (not a diagnosis):\n\n"+summary());
 };
 function saveReading(src){
+  if(S.live){toast("Demo readings cannot be saved");return}
   if(S.hr==null){toast("No reading to save yet");return}
   hist.push({ts:Date.now(),hr:Math.round(S.hr),spo2:S.spo2==null?null:Math.round(S.spo2),sys:S.sys==null?null:Math.round(S.sys),dia:S.dia==null?null:Math.round(S.dia),src:src||S.src||"device"});
   hist=hist.slice(-200);lw("hist",hist);ui();toast("Reading saved");
@@ -105,6 +112,30 @@ function stopSim(){if(simTimer){clearInterval(simTimer);simTimer=null}if(S.live)
 $("#icoBle").onclick=bleConnect;
 $("#icoSim").onclick=function(){if(S.live){stopSim();ui();toast("Demo stopped")}else{startSim();toast("Demo data running")}};
 $("#conn").onclick=function(){if(S.live){stopSim();ui()}else if(S.conn)bleDisconnect();else bleConnect()};
+
+/* ---------- profile ---------- */
+$("#nameSave").onclick=function(){
+  var n=$("#nameIn").value.trim();
+  if(!n){toast("Enter a name");return}
+  user.name=n;lw("user",user);ui();toast("Name saved");
+};
+var devMode=ls("devMode",false);
+$("#devMode").checked=devMode;
+$("#devTools").hidden=!devMode;
+$("#devMode").onchange=function(){
+  devMode=$("#devMode").checked;lw("devMode",devMode);$("#devTools").hidden=!devMode;
+};
+$("#pBle").onclick=bleConnect;
+$("#pDis").onclick=function(){if(S.live){stopSim()}else bleDisconnect();ui()};
+$("#pSim").onclick=function(){
+  if(S.live){stopSim();$("#pSim").textContent="Start demo data";toast("Demo stopped")}
+  else{startSim();$("#pSim").textContent="Stop demo data";toast("Demo data running")}
+  ui();
+};
+$("#pDel").onclick=function(){
+  if(!hist.length){toast("No saved readings");return}
+  if(confirm("Delete all saved readings?")){hist=[];lw("hist",hist);ui();toast("Saved readings deleted")}
+};
 
 /* ---------- phone camera check ---------- */
 var FS=30,DUR=30,stream,track,rec=[],running=false,t0=0,raf=0,vid=$("#v"),pc=$("#px").getContext("2d",{willReadFrequently:true});

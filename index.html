@@ -16,7 +16,7 @@
 
 <!-- HOME -->
 <section id="home" class="scr on">
- <div class="top"><button class="av" id="avBtn" aria-label="Edit name">J</button><div><small>Hi</small><b id="nm">there</b></div></div>
+ <div class="top"><button class="av" id="avBtn" data-go="profile" aria-label="Open profile">J</button><div><small>Hi</small><b id="nm">there</b></div></div>
  <h1>Tracking<br>your Heart</h1>
  <div class="row" style="margin-bottom:12px">
   <div class="batt"><div class="cell"><svg class="bolt" width="18" height="18" viewBox="0 0 24 24" fill="#0E1512"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><i id="b5"></i><i id="b4"></i><i id="b3"></i><i id="b2"></i><i id="b1"></i></div><b id="batV" style="margin-top:8px">--%</b><span>battery</span></div>
@@ -76,11 +76,23 @@
  <p class="mut" style="margin-top:10px">Chrome on Android works best. The estimate is for testing only.</p>
 </section>
 
+<!-- PROFILE -->
+<section id="profile" class="scr">
+ <div class="back"><button class="ico" data-back aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button><span></span></div>
+ <h1>Profile</h1>
+ <div class="card soft"><h3 class="ch">Your name</h3><div class="inl"><input id="nameIn" type="text" maxlength="30" placeholder="Your name" autocomplete="given-name"><button class="sm" id="nameSave">Save</button></div></div>
+ <div class="card sky"><h3 class="ch">Devices</h3><p class="mut" id="devSt">No device connected.</p><p class="mut" id="devBat" hidden></p><div class="inl"><button class="sm" id="pBle">Connect (Bluetooth)</button><button class="sm ghostb" id="pDis">Disconnect</button></div><p class="mut" style="margin:10px 0 0">A connected device can add more signals (such as ECG and oxygen) and a steadier live view. Without one, the Check tab measures heart rate with your phone camera.</p><p class="mut" style="margin:6px 0 0">Optional hardware. Works in Chrome on Android; not available in Safari on iPhone.</p></div>
+ <div class="card soft"><h3 class="ch">Developer</h3><label class="sw"><input type="checkbox" id="devMode"> Developer mode</label><div id="devTools" hidden><p class="mut">Demo data is simulated. It is clearly marked and cannot be saved.</p><button class="sm" id="pSim">Start demo data</button></div></div>
+ <div class="card butter"><h3 class="ch">Your data</h3><p class="mut" style="color:#33423A">Readings are stored on this phone only.</p><button class="sm" id="pDel">Delete all saved readings</button></div>
+ <p class="mut">Language, privacy and notification settings arrive in later steps.</p>
+</section>
+
 <nav class="pill" aria-label="Main">
  <button data-go="home" data-n="home" aria-current="page" aria-label="Device"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9H4z"/></svg></button>
  <button data-go="health" data-n="health" aria-label="Heart health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.7 4.5 6.4 4.5c2 0 3.6 1 5.6 3.2 2-2.2 3.6-3.2 5.6-3.2 3.7 0 5.5 3.9 4 7.3C19.5 16.4 12 21 12 21z"/></svg></button>
  <button data-go="check" data-n="check" aria-label="Check with phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M6 12h3l1.5-3 3 6 1.5-3H18"/></svg></button>
  <button data-go="diag" data-n="diag" aria-label="Diagnostics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 20v-8M12 20V4M19 20v-5"/></svg></button>
+ <button data-go="profile" data-n="profile" aria-label="Profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg></button>
 </nav>
 <div id="toast" role="status"></div>
 <video id="v" playsinline muted></video><canvas id="px" width="16" height="16" hidden></canvas>
