@@ -157,6 +157,9 @@ function stopCheck(){
   if(stream)stream.getTracks().forEach(function(t){t.stop()});
   $("#cGo").firstChild.textContent="Start check";
   if(rec.length>FS*10){var r=analyse(rec.slice(-FS*DUR));if(r&&r.q>=0.5){S.hr=r.hr;S.q=r.q;S.spo2=null;S.sys=null;S.dia=null;S.src="Phone";S.wave=r.z.slice(-600);saveReading("Phone");$("#cMsg").textContent="Done. Result saved.";go("diag");return}}
+  $("#scanTitle").textContent="Could not obtain a reliable reading";
+  $("#cSignal").textContent="Unavailable";
+  $("#cHr").textContent="--";
   $("#cMsg").textContent="Signal was too weak. Try again, pressing lightly and keeping still.";
 }
 function loopCheck(){
@@ -222,23 +225,71 @@ function drawFingerprint(){
   x.clearRect(0,0,W,H);
   x.save();
   x.translate(cx,cy);
+  x.beginPath();
+  x.arc(0,0,194,0,Math.PI*2);
+  x.clip();
+
   var quality=running?Math.min(1,rec.length/(FS*12)):0.18;
-  for(var i=0;i<26;i++){
-    var rx=76+i*3.05,ry=112+i*2.25;
+  var ink="rgba(14,21,18,"+(0.72+quality*.18)+")";
+
+  // Complete concentric core
+  for(var i=0;i<11;i++){
+    var r=10+i*8;
     x.beginPath();
-    x.ellipse(0,5,rx,ry,0,Math.PI*(0.12+i*.012),Math.PI*(1.88-i*.008));
-    x.strokeStyle=i%5===0?"rgba(249,226,122,.82)":"rgba(14,21,18,"+(0.38+quality*.34)+")";
-    x.lineWidth=i%5===0?3:1.5;
+    x.ellipse(0,5,r,r*(0.9+i*.018),-0.08,0,Math.PI*2);
+    x.strokeStyle=i%3===0?"rgba(249,226,122,.95)":ink;
+    x.lineWidth=i%3===0?2.2:1.5;
     x.stroke();
   }
-  for(var i=0;i<7;i++){
-    var r=28+i*13;
+
+  // Long, continuous outer ridges form an enclosed fingerprint shape
+  for(var i=0;i<18;i++){
+    var left=-118+i*5.8;
     x.beginPath();
-    x.arc(0,8,r,0,Math.PI*2);
-    x.strokeStyle=i===6?"rgba(14,21,18,.7)":"rgba(207,230,184,.95)";
-    x.lineWidth=i===6?2:1.5;
+    x.moveTo(left,-142);
+    x.bezierCurveTo(left-22,-72,left-30,-5,left-18,56);
+    x.bezierCurveTo(left-8,104,left+12,136,left+58,158);
+    x.strokeStyle=i%4===0?"rgba(249,226,122,.9)":ink;
+    x.lineWidth=i%4===0?2.4:1.45;
+    x.stroke();
+
+    var right=118-i*5.8;
+    x.beginPath();
+    x.moveTo(right,-142);
+    x.bezierCurveTo(right+22,-72,right+30,-5,right+18,56);
+    x.bezierCurveTo(right+8,104,right-12,136,right-58,158);
+    x.strokeStyle=i%4===0?"rgba(249,226,122,.9)":ink;
+    x.lineWidth=i%4===0?2.4:1.45;
     x.stroke();
   }
+
+  // Top and bottom joins keep every ridge visually complete
+  for(var i=0;i<10;i++){
+    var x1=-105+i*23.3;
+    x.beginPath();
+    x.moveTo(x1,-155);
+    x.quadraticCurveTo(x1+7,-174,x1+18,-155);
+    x.strokeStyle=ink;
+    x.lineWidth=1.45;
+    x.stroke();
+
+    var y=-115+i*25;
+    x.beginPath();
+    x.moveTo(-142,y);
+    x.quadraticCurveTo(-162,y+8,-142,y+18);
+    x.moveTo(142,y);
+    x.quadraticCurveTo(162,y+8,142,y+18);
+    x.stroke();
+  }
+
+  // Subtle placement ring
+  x.beginPath();
+  x.arc(0,0,152,0,Math.PI*2);
+  x.strokeStyle="rgba(92,107,99,.38)";
+  x.lineWidth=2;
+  x.setLineDash([7,8]);
+  x.stroke();
+  x.setLineDash([]);
   x.restore();
 }
 

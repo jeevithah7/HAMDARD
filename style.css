@@ -60,7 +60,7 @@ canvas{width:100%;display:block}
 .sensor{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:var(--sage);border:2px solid rgba(14,21,18,.12);box-shadow:0 0 0 10px rgba(207,230,184,.38)}
 .sensor video{position:absolute;inset:-10%;width:120%;height:120%;object-fit:cover;opacity:0;transition:opacity .25s}
 .sensor.active video{opacity:.42}
-.sensor canvas{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:multiply}
+.sensor canvas{position:absolute;z-index:2;inset:0;width:100%;height:100%;mix-blend-mode:multiply;pointer-events:none}
 .sensorProgress{position:absolute;right:-5px;top:-5px;width:58px;height:58px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--butter);border:3px solid var(--soft);color:var(--ink);box-shadow:0 5px 16px rgba(14,21,18,.12)}
 .sensorProgress span{font-size:20px;font-weight:800;line-height:1}
 .sensorProgress small{font-size:10px;color:var(--mut)}
