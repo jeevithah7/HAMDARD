@@ -68,23 +68,15 @@
 
 <!-- CHECK -->
 <section id="check" class="scr">
- <h1>Check with<br>your phone</h1>
- <div class="card soft scanCard">
+ <button class="scanClose" data-go="home" aria-label="Close pulse scanner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+ <div class="scanFull">
   <div class="sensorWrap">
-   <div class="sensor" id="sensor"><video id="v" playsinline muted></video><canvas id="fingerPrint" width="400" height="400" aria-hidden="true"></canvas></div>
+   <button class="sensor" id="sensor" type="button" aria-label="Start pulse measurement"><video id="v" playsinline muted></video><canvas id="fingerPrint" width="400" height="400" aria-hidden="true"></canvas></button>
    <div class="sensorProgress"><span id="cT">30</span><small>sec</small></div>
   </div>
   <h2 id="scanTitle">Place your finger over the camera</h2>
-  <p class="mut" id="cMsg" role="status">Tap Start check, then cover the rear camera and flash.</p>
-  <div class="scanStats">
-   <div><span>Heart Rate</span><b><span id="cHr">--</span> <small>BPM</small></b></div>
-   <div><span>Signal Quality</span><b id="cSignal">Standby</b></div>
-  </div>
-  <canvas id="wChk" width="600" height="120"></canvas>
-  <div class="scanBar"><span>Signal</span><div class="bar" style="flex:1"><i id="cQ"></i></div></div>
+  <p class="mut" id="cMsg" role="status">Tap the sensor to begin.</p>
  </div>
- <button class="big" id="cGo" style="justify-content:center">Start check</button>
- <p class="mut" style="margin-top:10px">Chrome on Android works best. The estimate is for testing only.</p>
 </section>
 
 <!-- PROFILE -->
