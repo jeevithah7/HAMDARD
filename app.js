@@ -141,7 +141,7 @@ $("#pDel").onclick=function(){
 };
 
 /* ---------- phone camera check ---------- */
-var FS=30,DUR=30,stream,track,rec=[],running=false,cameraStarting=false,cameraRequest=0,t0=0,raf=0,torchAvailable=false,vid=document.createElement("video"),pc=$("#px").getContext("2d",{willReadFrequently:true}),preview=$("#camPreview"),previewCtx=preview.getContext("2d");
+var FS=30,MAX_SCAN_SECONDS=30,stream,track,rec=[],running=false,cameraStarting=false,cameraRequest=0,t0=0,raf=0,lastAnalysisAt=0,signalLossAt=null,stableSignalCount=0,lastStableBpm=null,torchAvailable=false,vid=document.createElement("video"),pc=$("#px").getContext("2d",{willReadFrequently:true}),preview=$("#camPreview"),previewCtx=preview.getContext("2d");
 vid.id="v";vid.playsInline=true;vid.muted=true;vid.setAttribute("playsinline","");vid.setAttribute("muted","");vid.setAttribute("aria-hidden","true");
 function scanUi(state,title,message,signal,foot){
   $("#check").dataset.scanState=state;
@@ -154,9 +154,9 @@ function scanUi(state,title,message,signal,foot){
 }
 function prepareCheck(){
   scanUi("idle","Ready to scan","Tap Start Scan to open the camera, then cover the rear lens with your fingertip.","Camera off · ready","Camera stays off until you start scanning");
+  rec=[];lastAnalysisAt=0;signalLossAt=null;stableSignalCount=0;lastStableBpm=null;
   $("#cHr").textContent="--";
   $("#cQ").style.width="0%";
-  $("#cT").textContent=DUR;
   $("#sensor").classList.remove("active");
   previewCtx.clearRect(0,0,preview.width,preview.height);
   window.__z=null;
@@ -167,9 +167,9 @@ async function startCheck(){
   var request=++cameraRequest;
   var activeStream=null,activeTrack=null;
   scanUi("requesting_permission","Initializing camera","Allow rear camera access when prompted.","Connecting · 0%","Preparing camera");
+  rec=[];lastAnalysisAt=0;signalLossAt=null;stableSignalCount=0;lastStableBpm=null;
   $("#cHr").textContent="--";
   $("#cQ").style.width="0%";
-  $("#cT").textContent=DUR;
   window.__z=null;
   $("#sensor").classList.remove("active");
   previewCtx.clearRect(0,0,preview.width,preview.height);
@@ -188,7 +188,7 @@ async function startCheck(){
     vid.srcObject=activeStream;await vid.play();
     if(request!==cameraRequest||!$("#check").classList.contains("on")){activeStream.getTracks().forEach(function(t){t.stop()});return}
     stopSim();S.conn=false;
-    rec=[];running=true;t0=performance.now();$("#sensor").classList.add("active");scanUi("positioning","Place your finger over the rear camera",torchAvailable?"Cover the camera and flash with your fingertip.":"Cover the camera lens in bright, steady lighting.","Awaiting contact · 0%","Waiting for lens coverage");loopCheck();
+    rec=[];running=true;t0=performance.now();lastAnalysisAt=0;signalLossAt=null;$("#sensor").classList.add("active");scanUi("positioning","Place your finger over the rear camera",torchAvailable?"Cover the camera and flash with your fingertip.":"Cover the camera lens in bright, steady lighting.","Awaiting contact · 0%","Waiting for lens coverage");loopCheck();
   }catch(e){
     if(request===cameraRequest){
       if(activeStream)activeStream.getTracks().forEach(function(t){t.stop()});
@@ -214,9 +214,20 @@ function stopCheck(analyze){
   pc.clearRect(0,0,16,16);
   window.__z=null;
   if(!wasRunning||analyze===false)return;
-  if(rec.length>FS*10){var r=analyse(rec.slice(-FS*DUR));if(r&&r.q>=0.5){S.hr=r.hr;S.q=r.q;S.spo2=null;S.sys=null;S.dia=null;S.src="Phone";S.wave=r.z.slice(-600);saveReading("Phone");$("#cMsg").textContent="Done. Result saved.";go("diag");return}}
-  scanUi("failed","Could not obtain a reliable reading","Signal was too weak. Try again, pressing lightly and keeping still.","Unavailable · 0%","No reliable pulse detected");
+  scanUi("failed","Could not obtain a reliable reading","We couldn't get a stable pulse. Cover the rear lens fully and keep your fingertip still, then try again.","No stable signal","No reliable pulse detected");
   $("#cHr").textContent="--";
+  $("#cQ").style.width="0%";
+}
+function finishCheck(result){
+  stopCheck(false);
+  S.hr=result.hr;S.q=result.q;S.spo2=null;S.sys=null;S.dia=null;S.src="Phone";S.wave=result.z.slice(-600);
+  saveReading("Phone");
+  go("diag");
+}
+function recentSamples(samples,seconds){
+  if(samples.length<2)return samples;
+  var cutoff=samples[samples.length-1].t-seconds*1000;
+  return samples.filter(function(sample){return sample.t>=cutoff});
 }
 function loopCheck(){
   if(!running)return;var now=performance.now(),el=(now-t0)/1000;
@@ -226,33 +237,44 @@ function loopCheck(){
   }
   pc.drawImage(vid,0,0,16,16);var d=pc.getImageData(0,0,16,16).data,r=0,g=0,b=0,n=d.length/4;
   for(var i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2]}r/=n;g/=n;b/=n;
-  var finger=r>120&&g<0.75*r;if(finger)rec.push({t:now-t0,r:r,g:g});
-  var remaining=Math.max(0,DUR-Math.ceil(el));
-  $("#cT").textContent=remaining;
+  var finger=r>120&&g<0.75*r;
+  if(finger){rec.push({t:now-t0,r:r,g:g});signalLossAt=null}
+  else{
+    if(signalLossAt===null)signalLossAt=now;
+    if(now-signalLossAt>500){rec=[];stableSignalCount=0;lastStableBpm=null;lastAnalysisAt=0}
+  }
+  var signalSeconds=rec.length>1?(rec[rec.length-1].t-rec[0].t)/1000:0;
   if(!finger){
     scanUi("positioning","Place your finger over the rear camera",torchAvailable?"Center your fingertip over the lens and flash.":"Center your fingertip over the rear lens in bright, steady lighting.","Awaiting contact · 0%","Waiting for lens coverage");
     $("#cHr").textContent="--";
     $("#cQ").style.width="0%";
-  }else if(rec.length<=FS*8){
-    var acquiring=Math.min(35,Math.round(rec.length/(FS*8)*35));
-    scanUi("detecting","Hold your finger steady","Confirming optical contact...","Acquiring · "+acquiring+"%","Finger detected · stabilizing");
+  }else if(signalSeconds<8){
+    var acquiring=Math.min(99,Math.round(signalSeconds/8*100));
+    scanUi("detecting","Hold your finger steady","Keep your fingertip covering the lens while we acquire a pulse signal.","Acquiring · "+acquiring+"%","Finger detected · acquiring signal");
     $("#cQ").style.width=acquiring+"%";
-  }else if(Math.floor(el*2)%2===0){
-    var a=analyse(rec.slice(-FS*10));
+  }else if(now-lastAnalysisAt>=500){
+    lastAnalysisAt=now;
+    var a=analyse(recentSamples(rec,10));
     if(a){
       window.__z=a.z;
       var quality=Math.round(a.q*100);
       $("#cQ").style.width=quality+"%";
       if(a.q>=0.5){
-        scanUi("scanning","Measuring your pulse","Strong signal. Keep light pressure and stay still.","Strong · "+quality+"%","Signal detected · keep still");
-        if($("#cHr"))$("#cHr").textContent=Math.round(a.hr);
+        stableSignalCount=lastStableBpm!==null&&Math.abs(a.hr-lastStableBpm)<=8?stableSignalCount+1:1;
+        lastStableBpm=a.hr;
+        scanUi("scanning","Measuring your pulse","Signal acquired. Keep your fingertip steady while we verify the reading.","Strong · "+quality+"%","Verifying pulse signal");
+        $("#cHr").textContent=Math.round(a.hr);
+        if(stableSignalCount>=3){finishCheck(a);return}
       }else{
+        stableSignalCount=0;lastStableBpm=null;
         scanUi("detecting","Hold steady","Weak signal. Press lightly and keep still.","Acquiring · "+quality+"%","Improving optical signal");
-        if($("#cHr"))$("#cHr").textContent="--";
+        $("#cHr").textContent="--";
       }
+    }else{
+      stableSignalCount=0;lastStableBpm=null;
     }
   }
-  if(el>=DUR){stopCheck();return}raf=requestAnimationFrame(loopCheck);
+  if(el>=MAX_SCAN_SECONDS){stopCheck();return}raf=requestAnimationFrame(loopCheck);
 }
 function prep(s){
   if(s.length<FS*4)return null;var t=s.map(function(a){return a.t}),T0=t[0],N=Math.floor((t[t.length-1]-T0)/1000*FS),o={r:[],g:[]},j=0;
@@ -342,11 +364,10 @@ function drawFingerprint(){
     x.beginPath();x.arc(p.x,p.y,i%3===0?2:1.3,0,Math.PI*2);
     x.fillStyle=i%3===0?"rgba(249,226,122,.9)":"rgba(191,230,240,.72)";x.fill();
   });
-  var remaining=Number($("#cT").textContent)||DUR,progress=running?Math.max(0,Math.min(1,1-remaining/DUR)):0;
   for(var t=0;t<60;t++){
-    var a=t/60*Math.PI*2-Math.PI/2,major=t%5===0,lit=t/60<progress;
+    var a=t/60*Math.PI*2-Math.PI/2,major=t%5===0;
     x.beginPath();x.moveTo(cx+Math.cos(a)*(major?185:187),cy+Math.sin(a)*(major?185:187));x.lineTo(cx+Math.cos(a)*189,cy+Math.sin(a)*189);
-    x.strokeStyle=lit?"rgba(249,226,122,.95)":"rgba(243,245,242,.24)";x.lineWidth=major?1.8:1;x.stroke();
+    x.strokeStyle=running&&major?"rgba(191,230,240,.82)":"rgba(243,245,242,.24)";x.lineWidth=major?1.8:1;x.stroke();
   }
   x.restore();
 }

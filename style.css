@@ -56,8 +56,8 @@ canvas{width:100%;display:block}
 .sm.ghostb{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
 .sw{display:flex;align-items:center;gap:10px;font-weight:700}
 .sw input{width:18px;height:18px;accent-color:var(--ink)}
-#check.scr.on{position:relative;height:100vh;height:100dvh;min-height:620px;padding:0;display:flex;flex-direction:column;overflow:auto;background:var(--ink);color:var(--soft)}
-.scanClose{position:absolute;z-index:10;top:calc(12px + env(safe-area-inset-top,0px));right:18px;width:42px;height:42px;border:0;border-radius:50%;background:var(--soft);color:var(--ink);display:grid;place-items:center;box-shadow:0 5px 16px rgba(14,21,18,.2);cursor:pointer}
+#check.scr.on{position:relative;height:100vh;height:100dvh;min-height:620px;padding:0;display:flex;flex-direction:column;overflow:auto;background:linear-gradient(#E3F7C8 0,#F2FBE6 240px,#fff 560px);color:var(--ink)}
+.scanClose{position:absolute;z-index:10;top:calc(12px + env(safe-area-inset-top,0px));right:18px;width:42px;height:42px;border:1px solid rgba(14,21,18,.14);border-radius:50%;background:var(--soft);color:var(--ink);display:grid;place-items:center;box-shadow:0 5px 16px rgba(14,21,18,.2);cursor:pointer}
 .scanClose svg{width:20px;height:20px}
 .scanClose:focus-visible{outline:3px solid var(--butter);outline-offset:3px}
 .app.checking .pill{display:none}
@@ -69,12 +69,14 @@ canvas{width:100%;display:block}
 .sensor #fingerPrint{position:absolute;z-index:2;inset:0;width:100%;height:100%;pointer-events:none}
 .lensTag{position:absolute;z-index:3;left:50%;bottom:22px;transform:translateX(-50%);padding:6px 11px;border:1px solid rgba(243,245,242,.26);border-radius:999px;background:rgba(14,21,18,.78);color:var(--soft);font-size:9px;line-height:1.2;font-weight:800;letter-spacing:.11em;text-transform:uppercase;white-space:nowrap;opacity:0;transition:opacity .2s}
 .sensor.active .lensTag{opacity:1}
-.sensorProgress{position:absolute;z-index:4;left:-4px;top:-4px;width:58px;height:58px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--butter);border:3px solid var(--ink);color:var(--ink);box-shadow:0 5px 16px rgba(14,21,18,.28)}
-.sensorProgress span{font-size:20px;font-weight:800;line-height:1}
-.sensorProgress small{font-size:10px;color:var(--mut)}
 .scanIntro{width:min(100%,370px);min-height:78px;display:flex;flex-direction:column;justify-content:center}
-.scanIntro h2{max-width:340px;margin:0 auto 5px;font-size:21px;line-height:1.2;letter-spacing:-.02em;color:var(--soft)}
-.scanIntro p{max-width:340px;min-height:20px;margin:0 auto;color:rgba(243,245,242,.7);font-size:13px}
+.scanIntro h2{max-width:340px;margin:0 auto 5px;font-size:21px;line-height:1.2;letter-spacing:-.02em;color:var(--ink)}
+.scanIntro p{max-width:340px;min-height:20px;margin:0 auto;color:var(--mut);font-size:13px;transition:color .2s,font-weight .2s}
+#check[data-scan-state="detecting"] .scanIntro p,
+#check[data-scan-state="scanning"] .scanIntro p{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ink);font-weight:800}
+#check[data-scan-state="detecting"] .scanIntro p::before,
+#check[data-scan-state="scanning"] .scanIntro p::before{content:"";width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--sage);box-shadow:0 0 0 3px rgba(207,230,184,.45)}
+#check[data-scan-state="scanning"] .scanIntro p::before{background:var(--ink);box-shadow:0 0 0 3px rgba(14,21,18,.12)}
 .scanReadout{width:min(100%,390px);min-height:170px;align-self:stretch;justify-self:center;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:14px 16px;border:1px solid rgba(207,230,184,.72);border-radius:22px;background:var(--soft);color:var(--ink);text-align:left}
 .scanMetrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
 .scanMetrics>div:first-child{border-right:1px solid rgba(14,21,18,.13)}
@@ -92,10 +94,13 @@ canvas{width:100%;display:block}
 .scanWave canvas{width:100%;height:100%}
 .scanFoot{display:flex;justify-content:space-between;gap:8px;color:var(--mut);font-size:10px;font-weight:700}
 .scanActions{width:min(100%,390px);padding:4px 20px calc(18px + env(safe-area-inset-bottom,0px));margin:0 auto}
-.scanCancel{width:100%;min-height:52px;border:1px solid rgba(243,245,242,.38);border-radius:16px;background:rgba(243,245,242,.06);color:var(--soft);font:800 14px "Plus Jakarta Sans",sans-serif;letter-spacing:.01em;cursor:pointer;transition:background .2s,border-color .2s}
-.scanCancel:hover{background:rgba(243,245,242,.12);border-color:var(--sage)}
-#check[data-scan-state="failed"] .scanCancel{border-color:var(--butter);color:var(--butter)}
-#check[data-scan-state="complete"] .scanCancel{border-color:var(--sage);color:var(--sage)}
+.scanCancel{width:100%;min-height:52px;border:1px solid var(--butter);border-radius:16px;background:var(--butter);color:var(--ink);font:800 14px "Plus Jakarta Sans",sans-serif;letter-spacing:.01em;cursor:pointer;transition:filter .2s,background .2s,border-color .2s}
+.scanCancel:hover{filter:brightness(.97)}
+#check[data-scan-state="requesting_permission"] .scanCancel,
+#check[data-scan-state="positioning"] .scanCancel,
+#check[data-scan-state="detecting"] .scanCancel,
+#check[data-scan-state="scanning"] .scanCancel{border-color:var(--ink);background:var(--ink);color:var(--soft)}
+#check[data-scan-state="complete"] .scanCancel{border-color:var(--sage);background:var(--sage);color:var(--ink)}
 @media(max-height:720px){.scanFull{gap:10px;padding-top:calc(54px + env(safe-area-inset-top,0px))}.sensorWrap{width:min(58vw,270px)}.scanIntro{min-height:64px}.scanIntro h2{font-size:19px}.scanReadout{min-height:155px;padding:10px 14px;gap:7px}.scanActions{padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:9;max-width:90%;text-align:center}
 #toast.on{opacity:1}
